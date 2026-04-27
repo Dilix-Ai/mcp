@@ -1,0 +1,58 @@
+{
+  "name": "@dilix/mcp",
+  "version": "1.0.0",
+  "description": "Open-source MCP server for Dilix — the regulatory intelligence layer for real estate AI agents. Zoning, permits, entitlement roadmaps, state legislation, deal scoring.",
+  "type": "module",
+  "bin": {
+    "dilix-mcp": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "dilix",
+    "real-estate",
+    "ai-agents",
+    "agentic",
+    "zoning",
+    "permits",
+    "entitlement",
+    "regulatory-intelligence",
+    "cre",
+    "commercial-real-estate",
+    "claude",
+    "anthropic"
+  ],
+  "homepage": "https://dilix.ai/agents",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dilix-ai/mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dilix-ai/mcp/issues",
+    "email": "ops@dilix.ai"
+  },
+  "author": "Dilix (Erica Walters)",
+  "license": "MIT"
+}
