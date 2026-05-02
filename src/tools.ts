@@ -130,17 +130,74 @@ export const TOOLS: ToolDef[] = [
   {
     name: "analyze_deal",
     description:
-      "Full deal underwriting: zoning + property + financials + market rates + risk scoring → returns a verdict (pursue/pass) with reasoning.",
+      "Investment-grade deal underwriting with the regulatory layer attached. " +
+      "Returns: financials (cap rate, DSCR, NOI, cash-on-cash, GRM, break-even occupancy, LTV), " +
+      "regulatory resolution (max legal annual rent increase % + source ordinance + municipal-code citation + confidence + effective period — sourced from the California Apartment Association 1/2026 ordinance chart for CA properties, AB-1482 statewide fallback elsewhere), " +
+      "year-by-year projection (NOI under cap vs. unrestricted market growth for the chosen hold period), " +
+      "drag summary (cumulative rent foregone + capitalized exit-value haircut over the hold), " +
+      "and a verdict (strong/workable/caution/pass) with reasoning. " +
+      "Use this tool when an agent needs to underwrite a multifamily acquisition, run a 'what-if' on a regulatory scenario, or surface NOI risk that conventional underwriting models miss.",
     endpoint: "analyze-deal",
     inputSchema: {
       type: "object",
       properties: {
-        address: { type: "string" },
+        // Identity
+        address: { type: "string", description: "Full street address" },
+        property_name: { type: "string", description: "Optional display name (e.g. 'The Bryant')" },
+        city: { type: "string", description: "City name — required for rent control resolution" },
+        county: { type: "string", description: "County name — used for AB-1482 regional CPI lookup" },
+        state: { type: "string", description: "Two-letter state code, default CA" },
+        zip: { type: "string" },
+        // Property characteristics
+        year_built: {
+          type: "number",
+          description: "Year of original construction. Drives Costa-Hawkins + AB-1482 15-year eligibility filters. Default 1970 if unknown.",
+        },
+        unit_count: { type: "number", description: "Total dwelling units in the building" },
+        property_type: {
+          type: "string",
+          enum: [
+            "single_family",
+            "condo",
+            "duplex",
+            "triplex",
+            "fourplex",
+            "multifamily_5plus",
+            "adu",
+            "mobile_home",
+          ],
+          description: "Used for Costa-Hawkins SFH/condo exemptions",
+        },
+        is_owner_occupied: { type: "boolean" },
+        is_subsidized: { type: "boolean", description: "Deed-restricted affordable / LIHTC / Section 8" },
+        // Financials
         purchase_price: { type: "number" },
-        intended_use: { type: "string" },
-        notes: { type: "string" },
+        current_gross_monthly_rents: { type: "number" },
+        current_annual_rent: { type: "number", description: "Alternative to monthly" },
+        vacancy_rate: { type: "number", description: "Percent, default 7 (93% occupancy)" },
+        other_monthly_income: { type: "number" },
+        // Expenses (provide either ratio OR itemized)
+        expense_ratio: { type: "number", description: "Operating expenses as % of EGI" },
+        property_taxes: { type: "number", description: "Annual" },
+        insurance: { type: "number", description: "Annual" },
+        property_management: { type: "number", description: "% of EGI, default 8" },
+        maintenance_repairs: { type: "number", description: "Annual" },
+        utilities: { type: "number", description: "Annual" },
+        reserves: { type: "number", description: "Annual" },
+        other_expenses: { type: "number", description: "Annual" },
+        // Financing
+        down_payment_pct: { type: "number", description: "Default 25" },
+        interest_rate: { type: "number", description: "Annual %, default 6.75" },
+        loan_amortization_years: { type: "number", description: "Default 30" },
+        // Underwriting assumptions
+        hold_years: { type: "number", description: "Hold period for projection, default 5, range 1-15" },
+        market_growth_pct: {
+          type: "number",
+          description: "Annual unrestricted-rent-growth assumption for the comparison line, default 4",
+        },
+        expense_growth_pct: { type: "number", description: "Annual expense growth assumption, default 3" },
       },
-      required: ["address"],
+      required: ["address", "city", "purchase_price"],
     },
   },
   {
