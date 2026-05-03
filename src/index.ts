@@ -9,10 +9,10 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-import { DilixClient } from "./client.js";
+import { DilixClient, splitEnvelope, type DilixEnvelope } from "./client.js";
 import { TOOLS } from "./tools.js";
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 
 const apiKey = process.env.DILIX_API_KEY;
 if (!apiKey) {
@@ -51,11 +51,61 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 
   const args = (req.params.arguments || {}) as Record<string, unknown>;
   const result = await client.call(tool.endpoint, args);
+  const { envelope, data } = splitEnvelope(result);
 
-  return {
-    content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
-  };
+  // The MCP content array can carry multiple text blocks. Putting
+  // the envelope's narrative + sources first makes it easy for the
+  // host model to ground its answer without fishing through the
+  // structured payload.
+  const content: Array<{ type: "text"; text: string }> = [];
+
+  if (envelope._reasoning) {
+    content.push({
+      type: "text",
+      text: `${envelope._reasoning}`,
+    });
+  }
+
+  if (envelope._caveats && envelope._caveats.length > 0) {
+    content.push({
+      type: "text",
+      text: `⚠ Caveats:\n- ${envelope._caveats.join("\n- ")}`,
+    });
+  }
+
+  if (envelope._sources && envelope._sources.length > 0) {
+    content.push({
+      type: "text",
+      text: formatSources(envelope._sources),
+    });
+  }
+
+  // Always include the structured data — agents that need the full
+  // shape can parse this. If the response had no envelope at all
+  // (legacy endpoint), this is the only block returned.
+  content.push({
+    type: "text",
+    text: JSON.stringify(envelope._reasoning ? data : result, null, 2),
+  });
+
+  if (envelope._schemaVersion) {
+    content.push({
+      type: "text",
+      text: `Schema: ${envelope._schemaVersion}${envelope._generatedAt ? ` · generated ${envelope._generatedAt}` : ""}`,
+    });
+  }
+
+  return { content };
 });
+
+function formatSources(sources: NonNullable<DilixEnvelope["_sources"]>): string {
+  const lines = ["Sources:"];
+  for (const s of sources) {
+    const url = s.sourceUrl ? ` — ${s.sourceUrl}` : "";
+    lines.push(`- ${s.providerLabel}: ${s.citation}${url}`);
+  }
+  return lines.join("\n");
+}
 
 const transport = new StdioServerTransport();
 await server.connect(transport);

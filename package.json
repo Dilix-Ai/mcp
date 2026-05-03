@@ -1,6 +1,6 @@
 {
   "name": "@dilix/mcp",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Open-source MCP server for Dilix — the regulatory intelligence layer for real estate AI agents. Zoning, permits, entitlement roadmaps, state legislation, deal scoring.",
   "type": "module",
   "bin": {
