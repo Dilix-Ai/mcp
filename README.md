@@ -126,6 +126,36 @@ within 30 days to lock current rules.
 
 ---
 
+## Grounding — every tool returns reasoning + sources
+
+Starting in v1.1.0, every Dilix MCP tool surfaces a structured envelope
+to the host model:
+
+- **`_reasoning`** — plain-English narrative the agent can quote verbatim
+  to the user. Composed by Dilix from structured fields, not extrapolated.
+  Eliminates the most common failure mode (host model invents a cap rate /
+  code section / date that wasn't in the response).
+- **`_sources`** — citations the agent can surface as "Source: X" links.
+  Includes provider, citation text, and a verifiable URL where available.
+  Pulled from real authorities: ATTOM, DataSF, FEMA, HUD, NY Fed, FRED,
+  Cal. Civ. Code, municipal codes, etc.
+- **`_caveats`** — soft warnings the agent should pass through (e.g.
+  "no parcel-level zoning available for this address — answers are
+  city-level only").
+- **`_schemaVersion`** — pin behavior across upgrades.
+
+The MCP server splits these into separate content blocks so the host
+model receives the narrative as the primary text and citations as a
+structured second block. Agents that want the raw payload still get it
+as a JSON block.
+
+Endpoints currently emitting the envelope: `analyze_deal`, `analyze_zoning`,
+`get_entitlement_roadmap`, `lookup_property`, `market_rates`,
+`find_opportunities`, `scan_portfolio`. Others fall back to the legacy
+single-block JSON response.
+
+---
+
 ## Configuration
 
 | Env var | Required? | Default | Description |
