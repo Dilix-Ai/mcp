@@ -3,6 +3,7 @@
 > The open-source MCP server for Dilix — the regulatory intelligence layer for real estate AI agents.
 
 [![npm version](https://img.shields.io/npm/v/@dilix/mcp.svg)](https://www.npmjs.com/package/@dilix/mcp)
+[![CI](https://github.com/dilix-ai/mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/dilix-ai/mcp/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub stars](https://img.shields.io/github/stars/dilix-ai/mcp.svg?style=social)](https://github.com/dilix-ai/mcp)
 
