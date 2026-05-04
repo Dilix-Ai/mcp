@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          test -f dist/index.js
+          test -f dist/index.d.ts
+          test -f dist/client.js
+          test -f dist/client.d.ts
+          test -f dist/tools.js
+          test -f dist/tools.d.ts
+
+      - name: Smoke-test client export
+        run: |
+          node -e "import('./dist/client.js').then(m => { if (typeof m.DilixClient !== 'function') throw new Error('DilixClient export missing'); console.log('DilixClient OK'); })"
