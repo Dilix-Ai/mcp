@@ -232,4 +232,43 @@ export const TOOLS: ToolDef[] = [
       properties: {},
     },
   },
+  {
+    name: "request_demo_render",
+    description:
+      "Live-renders a Dilix demo bundle for an address that doesn't have one yet. Fires GitHub Actions to run the full render pipeline (3D screenshot, NOI counterfactual, citations) and returns immediately. The bundle is typically available 60-90 seconds later — call `lookup_demo` with the same address to fetch it. " +
+      "Use this when `lookup_demo` returned `found: false` and you want to produce the demo on demand. Ideal for live cofounder/investor pitches: 'type any address, I'll render it'.",
+    endpoint: "trigger-demo-render",
+    inputSchema: {
+      type: "object",
+      properties: {
+        address: {
+          type: "string",
+          description: "Full street address",
+        },
+        source_url: {
+          type: "string",
+          description: "Optional LoopNet/Crexi listing URL — if provided, the render scrapes broker NOI for full $ delta computation",
+        },
+      },
+      required: ["address"],
+    },
+  },
+  {
+    name: "lookup_demo",
+    description:
+      "Returns the latest pre-rendered Dilix demo bundle for an address: 3D hero + HUD images, broker headline (LoopNet ask + cap), Dilix correction (rent cap, 5-yr NOI drag, exit haircut, corrected NOI, valuation gap), and a public shareable URL at /demo/{slug}. " +
+      "Use this when an agent or chat user wants to surface the Dilix counterfactual on a property — pitches, deck slides, prospect emails, social posts. " +
+      "Read-only: returns a 'not found' envelope (with a hint to live-render at /feasibility-3d) if no demo exists yet for the address. The nightly auto-discovery cron renders new SF/Oakland multifamily listings.",
+    endpoint: "lookup-demo",
+    inputSchema: {
+      type: "object",
+      properties: {
+        address: {
+          type: "string",
+          description: "Full street address, e.g. '2625 Polk St, San Francisco, CA 94109'",
+        },
+      },
+      required: ["address"],
+    },
+  },
 ];

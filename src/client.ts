@@ -1,5 +1,5 @@
 // HTTP client for the Dilix API.
-// Talks to api.dilix.ai by default; override with DILIX_API_BASE.
+// Targets the live Dilix API endpoint by default; override with DILIX_API_BASE.
 
 export interface DilixClientOptions {
   apiKey: string;

@@ -162,7 +162,7 @@ single-block JSON response.
 | Env var | Required? | Default | Description |
 |---------|-----------|---------|-------------|
 | `DILIX_API_KEY` | Yes | — | Get from [dilix.ai/api-keys](https://dilix.ai/api-keys) |
-| `DILIX_API_BASE` | No | `https://api.dilix.ai` | Override for self-hosted or staging |
+| `DILIX_API_BASE` | No | live Dilix API | Override for self-hosted or staging |
 
 ---
 

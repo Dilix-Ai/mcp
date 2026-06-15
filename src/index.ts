@@ -12,7 +12,7 @@ import {
 import { DilixClient, splitEnvelope, type DilixEnvelope } from "./client.js";
 import { TOOLS } from "./tools.js";
 
-const VERSION = "1.1.0";
+const VERSION = "1.2.0";
 
 const apiKey = process.env.DILIX_API_KEY;
 if (!apiKey) {
@@ -25,7 +25,13 @@ if (!apiKey) {
 
 const client = new DilixClient({
   apiKey,
-  baseUrl: process.env.DILIX_API_BASE || "https://api.dilix.ai",
+  // Default points at the live Dilix API (Supabase Edge Functions). A
+  // branded api.dilix.ai custom domain can front this later; until then
+  // the raw functions URL is what actually resolves. Override with
+  // DILIX_API_BASE for self-hosted or staging.
+  baseUrl:
+    process.env.DILIX_API_BASE ||
+    "https://tztkiptepktvuwlygqeq.supabase.co/functions/v1",
 });
 
 const server = new Server(

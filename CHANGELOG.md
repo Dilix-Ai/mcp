@@ -4,6 +4,40 @@ All notable changes to `@dilix/mcp` will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] — 2026-05-06
+
+The demo-surface release: Dilix demo bundles are now agent-callable.
+
+### Added
+
+- New tool `lookup_demo` — returns the latest pre-rendered Dilix demo
+  bundle for an address (3D hero/HUD images, broker headline, Dilix
+  correction, public `/demo/{slug}` URL). Read-only; the nightly
+  GitHub Actions cron renders new SF/Oakland multifamily listings, and
+  ad-hoc renders happen via `/feasibility-3d` in a browser.
+- New tool `request_demo_render` — live-renders a demo bundle on demand
+  for an address that doesn't have one yet (fires the GitHub Actions
+  render pipeline, returns immediately; poll `lookup_demo` ~60-90s later).
+  Built for live pitches: "type any address, I'll render it."
+- New edge functions `lookup-demo` and `trigger-demo-render` back the
+  tools. Read from the new `demo_runs` table (envelope-shaped,
+  agent_runs-compatible).
+
+### Changed
+
+- Default `DILIX_API_BASE` now points at the live Dilix API endpoint.
+  The previous default (`api.dilix.ai`) was never provisioned in DNS,
+  so fresh installs failed to connect; the new default resolves out of
+  the box. Override with `DILIX_API_BASE` as before.
+
+### Why this matters
+
+A technical co-founder watching the Dilix pitch can paste any address
+into Claude Code/Cursor, get the rendered counterfactual back via
+`lookup_demo`, and see the data-layer + closed-loop architecture in
+action — without touching the dilix.ai UI. Proof that the product is
+agent-native, not just a webapp.
+
 ## [1.1.0] — 2026-05-03
 
 The grounding upgrade: Dilix endpoints now emit a structured
